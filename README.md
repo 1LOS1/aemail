@@ -7,7 +7,7 @@
 package main
 
 import (
-	"github.com/1LOS1/aemail"
+	"github.com/llightos/aemail"
 	"fmt"
 )
 
