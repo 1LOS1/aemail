@@ -1,8 +1,8 @@
 package main
 
 import (
-	aemail "email"
 	"fmt"
+	"github.com/1LOS1/aemail"
 )
 
 func main() {
