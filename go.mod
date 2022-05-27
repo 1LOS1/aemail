@@ -1,4 +1,4 @@
-module email
+module aemail
 
 go 1.16
 
