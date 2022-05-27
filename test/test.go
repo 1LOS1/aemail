@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/1LOS1/aemail"
+	"github.com/llightos/aemail"
 )
 
 func main() {

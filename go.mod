@@ -1,4 +1,4 @@
-module github.com/1LOS1/aemail
+module github.com/llightos/aemail
 
 go 1.16
 
