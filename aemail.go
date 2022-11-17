@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/go-gomail/gomail"
 	"log"
+	"regexp"
+	"strconv"
 )
 
 const (
 	//TODO:错误返回
-	Email_Not_Ready  = 5001
-	Email_No_Toer    = 5002
-	Email_Param_Err  = 5003
-	Email_No_SetFrom = 5004
-	Email_Has_Ready  = 5000
+	Email_Not_Ready = 5001
+	Email_No_Toer   = 5002
+	Email_Has_Ready = 5000
 )
 
 type EmailConfig struct {
@@ -96,9 +96,13 @@ func (a *AEmail) SetMessage(name, subject, body string) *AEmail {
 
 func (a *AEmail) Send() error {
 	if a.tag != Email_Has_Ready {
-		return errors.New("邮件发送错误 tag=" + string(a.tag))
+		return errors.New("邮件发送错误 tag=" + strconv.Itoa(a.tag))
 	}
-	err := a.dialer.DialAndSend(a.m)
+	err := a.verify()
+	if err != nil {
+		return err
+	}
+	err = a.dialer.DialAndSend(a.m)
 	if err != nil {
 		return err
 	}
@@ -106,6 +110,32 @@ func (a *AEmail) Send() error {
 	log.Println("send email success to", a.Toers)
 	if len(a.CCers) != 0 {
 		log.Println("cc email success to", a.CCers)
+	}
+	return nil
+}
+
+func VerifyEmailFormat(email string) bool {
+	pattern := `^[0-9a-z][_.0-9a-z-]{0,31}@([0-9a-z][0-9a-z-]{0,30}[0-9a-z]\.){1,4}[a-z]{2,4}$`
+	reg := regexp.MustCompile(pattern)
+	return reg.MatchString(email)
+}
+
+func (a *AEmail) verify() error {
+	format := VerifyEmailFormat(a.FromEmail)
+	if format == false {
+		return errors.New("FromEmail format err")
+	}
+	for _, toers := range a.Toers {
+		emailFormat := VerifyEmailFormat(toers)
+		if emailFormat == false {
+			return errors.New("Toers format err")
+		}
+	}
+	for _, ccers := range a.CCers {
+		emailFormat := VerifyEmailFormat(ccers)
+		if emailFormat == false {
+			return errors.New("Ccers format err")
+		}
 	}
 	return nil
 }
